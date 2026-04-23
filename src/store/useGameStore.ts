@@ -1,4 +1,4 @@
-import { io, type Socket } from 'socket.io-client';
+import type { Socket } from 'socket.io-client';
 import { create } from 'zustand';
 
 import {
@@ -62,7 +62,8 @@ interface GameState {
   setStatus: (status?: StatusMessage) => void;
 }
 
-function attachSocket(sessionToken: string, set: (next: Partial<GameState>) => void) {
+async function attachSocket(sessionToken: string, set: (next: Partial<GameState>) => void) {
+  const { io } = await import('socket.io-client');
   const socket = io({
     autoConnect: true,
     auth: {
@@ -105,7 +106,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     try {
       const discord = await bootstrapDiscord();
       const sessionBootstrap = await bootstrapSession(discord.mode === 'discord' ? discord.accessToken : undefined);
-      const socket = attachSocket(sessionBootstrap.sessionToken, set);
+      const socket = await attachSocket(sessionBootstrap.sessionToken, set);
 
       try {
         localStorage.setItem('qlife-session-token', sessionBootstrap.sessionToken);
