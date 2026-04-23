@@ -29,6 +29,7 @@ type StatusMessage = {
 
 interface GameState {
   booting: boolean;
+  bootError?: string;
   sessionToken?: string;
   session?: SessionUser;
   discordMode: 'local' | 'discord';
@@ -86,6 +87,7 @@ function attachSocket(sessionToken: string, set: (next: Partial<GameState>) => v
 
 export const useGameStore = create<GameState>((set, get) => ({
   booting: true,
+  bootError: undefined,
   discordMode: 'local',
   saveSlots: Array.from({ length: 3 }, (_, slot) => ({ slot, summary: null })),
   titlePanel: 'main',
@@ -98,30 +100,43 @@ export const useGameStore = create<GameState>((set, get) => ({
   setStatus: (recentStatus) => set({ recentStatus }),
 
   bootstrap: async () => {
-    set({ booting: true });
+    set({ booting: true, bootError: undefined });
 
-    const discord = await bootstrapDiscord();
-    const sessionBootstrap = await bootstrapSession(discord.mode === 'discord' ? discord.accessToken : undefined);
-    const socket = attachSocket(sessionBootstrap.sessionToken, set);
+    try {
+      const discord = await bootstrapDiscord();
+      const sessionBootstrap = await bootstrapSession(discord.mode === 'discord' ? discord.accessToken : undefined);
+      const socket = attachSocket(sessionBootstrap.sessionToken, set);
 
-    localStorage.setItem('qlife-session-token', sessionBootstrap.sessionToken);
+      try {
+        localStorage.setItem('qlife-session-token', sessionBootstrap.sessionToken);
+      } catch {
+        // Storage can fail in embedded contexts; the server session remains authoritative.
+      }
 
-    const [session, saveSlots, lobbies] = await Promise.all([
-      getSession(sessionBootstrap.sessionToken),
-      getSaveSlots(sessionBootstrap.sessionToken),
-      getLobbies(sessionBootstrap.sessionToken),
-    ]);
+      const [session, saveSlots, lobbies] = await Promise.all([
+        getSession(sessionBootstrap.sessionToken),
+        getSaveSlots(sessionBootstrap.sessionToken),
+        getLobbies(sessionBootstrap.sessionToken),
+      ]);
 
-    set({
-      booting: false,
-      discordMode: discord.mode,
-      discordError: discord.error,
-      sessionToken: sessionBootstrap.sessionToken,
-      session,
-      saveSlots,
-      lobbies,
-      socket,
-    });
+      set({
+        booting: false,
+        bootError: undefined,
+        discordMode: discord.mode,
+        discordError: discord.error,
+        sessionToken: sessionBootstrap.sessionToken,
+        session,
+        saveSlots,
+        lobbies,
+        socket,
+      });
+    } catch (error) {
+      set({
+        booting: false,
+        bootError: error instanceof Error ? error.message : 'QLife failed to boot.',
+        socket: undefined,
+      });
+    }
   },
 
   refreshSaveSlots: async () => {

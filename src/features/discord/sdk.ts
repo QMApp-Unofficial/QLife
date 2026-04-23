@@ -1,6 +1,31 @@
-import { DiscordSDK } from '@discord/embedded-app-sdk';
-
 import type { SaveState } from '@/types/game';
+
+type DiscordSdkInstance = {
+  commands: {
+    authorize: (args: {
+      client_id: string;
+      response_type: 'code';
+      state: string;
+      prompt: 'none';
+      scope: string[];
+    }) => Promise<{ code: string }>;
+    authenticate: (args: { access_token: string }) => Promise<unknown>;
+    setConfig: (args: { use_interactive_pip: boolean }) => Promise<unknown>;
+    setActivity: (args: {
+      activity: {
+        details: string;
+        state: string;
+        timestamps: { start: number };
+        assets: {
+          large_text: string;
+          small_text: string;
+        };
+      };
+    }) => Promise<unknown>;
+    openInviteDialog: () => Promise<unknown>;
+  };
+  ready: () => Promise<void>;
+};
 
 type DiscordBootstrap =
   | {
@@ -12,11 +37,11 @@ type DiscordBootstrap =
   | {
       mode: 'discord';
       accessToken?: string;
-      sdk: DiscordSDK;
+      sdk: DiscordSdkInstance;
       error?: string;
     };
 
-let discordSdk: DiscordSDK | null = null;
+let discordSdk: DiscordSdkInstance | null = null;
 
 function wait(ms: number) {
   return new Promise((resolve) => window.setTimeout(resolve, ms));
@@ -29,7 +54,8 @@ export async function bootstrapDiscord(): Promise<DiscordBootstrap> {
   }
 
   try {
-    discordSdk = new DiscordSDK(clientId);
+    const { DiscordSDK } = await import('@discord/embedded-app-sdk');
+    discordSdk = new DiscordSDK(clientId) as DiscordSdkInstance;
     await Promise.race([discordSdk.ready(), wait(1800).then(() => Promise.reject(new Error('timeout')))]);
 
     let accessToken: string | undefined;
