@@ -25,6 +25,7 @@ import { MiniGameOverlay } from '@/features/life/MiniGameOverlay';
 import { MapPanel } from '@/features/map/MapPanel';
 import { LobbyPanel } from '@/features/multiplayer/LobbyPanel';
 import { PhonePanel } from '@/features/phone/PhonePanel';
+import { usePerformanceMode } from '@/lib/usePerformanceMode';
 import { cn, currency } from '@/lib/utils';
 import { useGameStore } from '@/store/useGameStore';
 import type { MiniGameId, OverlayPanel, SaveState, ViewportMode } from '@/types/game';
@@ -150,6 +151,7 @@ export function GameShell() {
   );
 
   const viewport = useViewportMode();
+  const { lowPower } = usePerformanceMode();
   const [miniGame, setMiniGame] = useState<{ kind: MiniGameId; title: string; description: string; onComplete: (score: number) => void } | null>(null);
   if (!activeSave) return null;
 
@@ -259,8 +261,17 @@ export function GameShell() {
                 <div className="flex min-h-0 flex-col gap-3">
                   <div className="relative flex-1 overflow-hidden rounded-[30px] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02))] p-4">
                     <div className="absolute inset-x-8 bottom-0 h-[48%] rounded-t-[55%] bg-[radial-gradient(circle_at_center,rgba(214,168,95,0.12),transparent_55%),linear-gradient(180deg,rgba(19,15,15,0),rgba(10,10,12,0.9))]" />
-                    <motion.div className="absolute left-[16%] top-[18%] h-36 w-36 rounded-full bg-[rgba(214,168,95,0.12)] blur-[50px]" animate={{ y: [-10, 8, -6], x: [0, 8, -4] }} transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }} />
-                    <motion.div className="absolute right-[12%] top-[16%] h-28 w-28 rounded-full bg-[rgba(139,49,72,0.16)] blur-[46px]" animate={{ y: [8, -10, 6], x: [0, -8, 3] }} transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut' }} />
+                    {lowPower ? (
+                      <>
+                        <div className="absolute left-[16%] top-[18%] h-28 w-28 rounded-full bg-[rgba(214,168,95,0.08)] blur-[26px]" />
+                        <div className="absolute right-[12%] top-[16%] h-24 w-24 rounded-full bg-[rgba(139,49,72,0.1)] blur-[24px]" />
+                      </>
+                    ) : (
+                      <>
+                        <motion.div className="absolute left-[16%] top-[18%] h-36 w-36 rounded-full bg-[rgba(214,168,95,0.12)] blur-[50px]" animate={{ y: [-10, 8, -6], x: [0, 8, -4] }} transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }} />
+                        <motion.div className="absolute right-[12%] top-[16%] h-28 w-28 rounded-full bg-[rgba(139,49,72,0.16)] blur-[46px]" animate={{ y: [8, -10, 6], x: [0, -8, 3] }} transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut' }} />
+                      </>
+                    )}
                     <div className="relative">
                       <div className="max-w-[40ch] text-sm leading-7 text-[#efe1c7]/84">{world.skylineLabel}</div>
                       <div className="mt-6 grid gap-2 md:grid-cols-3">
