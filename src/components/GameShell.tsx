@@ -15,6 +15,7 @@ import {
   X,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 import { Ambience } from '@/components/Ambience';
 import { ACTIONS, LOCATIONS, getLocation } from '@/data/world';
@@ -128,23 +129,25 @@ export function GameShell() {
     lobbies,
     exitToTitle,
     recentStatus,
-  } = useGameStore((state) => ({
-    activeSave: state.activeSave,
-    overlay: state.overlay,
-    openOverlay: state.openOverlay,
-    closeOverlay: state.closeOverlay,
-    performAction: state.performAction,
-    travelTo: state.travelTo,
-    playCasino: state.playCasino,
-    applyForJob: state.applyForJob,
-    resolveEvent: state.resolveEvent,
-    createLobby: state.createLobby,
-    joinLobby: state.joinLobby,
-    leaveLobby: state.leaveLobby,
-    lobbies: state.lobbies,
-    exitToTitle: state.exitToTitle,
-    recentStatus: state.recentStatus,
-  }));
+  } = useGameStore(
+    useShallow((state) => ({
+      activeSave: state.activeSave,
+      overlay: state.overlay,
+      openOverlay: state.openOverlay,
+      closeOverlay: state.closeOverlay,
+      performAction: state.performAction,
+      travelTo: state.travelTo,
+      playCasino: state.playCasino,
+      applyForJob: state.applyForJob,
+      resolveEvent: state.resolveEvent,
+      createLobby: state.createLobby,
+      joinLobby: state.joinLobby,
+      leaveLobby: state.leaveLobby,
+      lobbies: state.lobbies,
+      exitToTitle: state.exitToTitle,
+      recentStatus: state.recentStatus,
+    })),
+  );
 
   const viewport = useViewportMode();
   const [miniGame, setMiniGame] = useState<{ kind: MiniGameId; title: string; description: string; onComplete: (score: number) => void } | null>(null);

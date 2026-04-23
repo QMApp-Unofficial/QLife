@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { AlertTriangle, LoaderCircle, RefreshCcw } from 'lucide-react';
+import { useShallow } from 'zustand/react/shallow';
 
 import { GameShell } from '@/components/GameShell';
 import { TitleScreen } from '@/components/TitleScreen';
@@ -7,12 +8,14 @@ import { syncRichPresence } from '@/features/discord/sdk';
 import { useGameStore } from '@/store/useGameStore';
 
 function App() {
-  const { booting, bootError, bootstrap, activeSave } = useGameStore((state) => ({
-    booting: state.booting,
-    bootError: state.bootError,
-    bootstrap: state.bootstrap,
-    activeSave: state.activeSave,
-  }));
+  const { booting, bootError, bootstrap, activeSave } = useGameStore(
+    useShallow((state) => ({
+      booting: state.booting,
+      bootError: state.bootError,
+      bootstrap: state.bootstrap,
+      activeSave: state.activeSave,
+    })),
+  );
 
   useEffect(() => {
     void bootstrap();

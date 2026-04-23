@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { Gamepad2, Globe2, LoaderCircle, Play, Settings2, Users } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 import { Ambience } from '@/components/Ambience';
 import { LobbyPanel } from '@/features/multiplayer/LobbyPanel';
@@ -26,17 +27,19 @@ export function TitleScreen() {
     createLobby,
     joinLobby,
     recentStatus,
-  } = useGameStore((state) => ({
-    saveSlots: state.saveSlots,
-    titlePanel: state.titlePanel,
-    setTitlePanel: state.setTitlePanel,
-    createSave: state.createSave,
-    loadSave: state.loadSave,
-    lobbies: state.lobbies,
-    createLobby: state.createLobby,
-    joinLobby: state.joinLobby,
-    recentStatus: state.recentStatus,
-  }));
+  } = useGameStore(
+    useShallow((state) => ({
+      saveSlots: state.saveSlots,
+      titlePanel: state.titlePanel,
+      setTitlePanel: state.setTitlePanel,
+      createSave: state.createSave,
+      loadSave: state.loadSave,
+      lobbies: state.lobbies,
+      createLobby: state.createLobby,
+      joinLobby: state.joinLobby,
+      recentStatus: state.recentStatus,
+    })),
+  );
 
   const defaultSlot = useMemo(() => saveSlots.find((slot) => slot.summary === null)?.slot ?? 0, [saveSlots]);
   const [draft, setDraft] = useState<CreateSaveInput>({
