@@ -14,8 +14,8 @@ dist-ssr
 .env
 .env.*
 !.env.example
-data/
-qlife-data/
+/data/
+/qlife-data/
 *.db
 *.db-shm
 *.db-wal
