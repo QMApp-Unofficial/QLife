@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  font-family: Manrope, sans-serif;
+  text-rendering: optimizeLegibility;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body,
+#root {
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top, rgba(139, 49, 72, 0.18), transparent 35%),
+    radial-gradient(circle at bottom left, rgba(214, 168, 95, 0.12), transparent 32%),
+    #0b0a0b;
+  color: #f6ebd8;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+@layer components {
+  .panel-shell {
+    @apply rounded-[30px] border border-white/10 bg-[rgba(12,11,12,0.6)] backdrop-blur-xl shadow-panel;
+  }
+
+  .hud-chip {
+    @apply rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[10px] uppercase tracking-[0.32em] text-[rgba(221,200,164,0.6)];
+  }
+
+  .action-card {
+    @apply rounded-[24px] border border-white/10 bg-white/5 px-4 py-4 text-left transition hover:border-[rgba(214,168,95,0.25)] hover:bg-[rgba(255,255,255,0.08)];
+  }
+
+  .icon-button {
+    @apply flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-[rgba(243,227,199,0.82)] transition hover:bg-white/10 hover:text-[#fff2df];
+  }
+
+  .dock-button {
+    @apply flex items-center gap-2 rounded-[22px] border border-white/10 bg-white/5 px-3 py-3 text-sm text-[#f1e3cb] transition hover:bg-white/10;
+  }
+
+  .title-input {
+    @apply w-full rounded-[22px] border border-white/10 bg-black/20 px-4 py-3 text-sm text-[#fff2dd] outline-none placeholder:text-[#bda987];
+  }
+}
