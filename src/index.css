@@ -28,6 +28,13 @@ body {
   color: #f6ebd8;
 }
 
+html.performance-lite body {
+  background:
+    linear-gradient(180deg, rgba(139, 49, 72, 0.1), transparent 26%),
+    linear-gradient(180deg, rgba(214, 168, 95, 0.05), transparent 34%),
+    #0b0a0b;
+}
+
 button,
 input {
   font: inherit;
@@ -61,4 +68,24 @@ button {
   .title-input {
     @apply w-full rounded-[22px] border border-white/10 bg-black/20 px-4 py-3 text-sm text-[#fff2dd] outline-none placeholder:text-[#bda987];
   }
+}
+
+html.performance-lite .panel-shell {
+  background: rgba(12, 11, 12, 0.88);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: 0 12px 32px rgba(5, 4, 4, 0.3);
+}
+
+html.performance-lite .backdrop-blur-md,
+html.performance-lite .backdrop-blur-lg,
+html.performance-lite .backdrop-blur-xl {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+html.performance-lite .action-card,
+html.performance-lite .dock-button,
+html.performance-lite .icon-button {
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
 }
